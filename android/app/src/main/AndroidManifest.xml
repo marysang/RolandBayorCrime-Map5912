@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.crime_alert">
    <application
-        android:label="crime_alert"
+        android:label="Crime Alert"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

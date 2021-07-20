@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "239507819231",
+    "project_id": "crime-alert-rb",
+    "storage_bucket": "crime-alert-rb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239507819231:android:be61c4cee8ea74ab23b76a",
+        "android_client_info": {
+          "package_name": "com.example.crime_alert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "239507819231-tqejts54o4h6iuas37ktb5m6inv9ndnf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.crime_alert",
+            "certificate_hash": "b5d2144675ce60f0c7d5ba72109a73ffd199217a"
+          }
+        },
+        {
+          "client_id": "239507819231-bq9ie47d8hckcdam8k53gh1m584svpps.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYnJRF-wmE7Jd4MPr8DsIqfB5fKdGu4MI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239507819231-bq9ie47d8hckcdam8k53gh1m584svpps.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,13 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:crime_alert/router.dart' as router;
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(CrimeAlert());
 }
 
 class CrimeAlert extends StatelessWidget {
+  // TODO:implement provider state management here
   @override
   Widget build(BuildContext context) {
     return App();
