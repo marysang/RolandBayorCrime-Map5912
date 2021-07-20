@@ -29,6 +29,11 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.popAndPushNamed(context, "home");
+      }
+    });
     return Scaffold(
       body: Container(
         color: Colors.orange[900],
