@@ -30,9 +30,11 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      if (FirebaseAuth.instance.currentUser != null) {
-        Navigator.popAndPushNamed(context, "home");
-      }
+      Future.delayed(Duration(milliseconds: 50), () {
+        if (FirebaseAuth.instance.currentUser != null) {
+          Navigator.popAndPushNamed(context, "home");
+        }
+      });
     });
     return Scaffold(
       body: Container(

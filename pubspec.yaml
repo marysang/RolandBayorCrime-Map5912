@@ -24,12 +24,16 @@ dependencies:
   flutter:
     sdk: flutter
 
-  provider: ^5.0.0
+  rxdart: ^0.27.1
   firebase_core: ^1.4.0
   firebase_auth: ^3.0.1
   google_sign_in: ^5.0.4
   flutter_config: ^2.0.0
   google_maps_flutter: ^2.0.6
+  location: ^4.3.0
+  uuid: ^3.0.4
+  geoflutterfire: ^3.0.1
+  cloud_firestore: ^2.4.0
 
   cupertino_icons: ^1.0.2
 
