@@ -32,7 +32,7 @@ class _LoginState extends State<Login> {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       Future.delayed(Duration(milliseconds: 50), () {
         if (FirebaseAuth.instance.currentUser != null) {
-          Navigator.popAndPushNamed(context, "home");
+          Navigator.pushReplacementNamed(context, "home");
         }
       });
     });
