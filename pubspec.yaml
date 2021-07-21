@@ -33,6 +33,9 @@ dependencies:
   location: ^4.3.0
   geoflutterfire: ^3.0.1
   cloud_firestore: ^2.4.0
+  firebase_storage: ^10.0.1
+  file_picker: 3.0.2+2
+  path: ^1.8.0
 
   cupertino_icons: ^1.0.2
 

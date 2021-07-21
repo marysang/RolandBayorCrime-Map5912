@@ -34,6 +34,7 @@ class MapProvider extends ChangeNotifier {
     GeoFirePoint center = geo.point(latitude: 9.3745, longitude: -0.8794);
     stream = radius.switchMap((rad) {
       var collectionReference = db.locationRef();
+
       return geo
           .collection(collectionRef: collectionReference)
           .within(center: center, radius: rad, field: 'position');
@@ -41,6 +42,7 @@ class MapProvider extends ChangeNotifier {
   }
 
   void _updateMarkers(List<DocumentSnapshot> snapshot) {
+    markers.clear();
     snapshot.forEach((DocumentSnapshot doc) {
       GeoPoint point = doc['position']['geopoint'];
       int count = doc["report_number"];
@@ -70,7 +72,7 @@ class MapProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addCurrentLocationToDB() async {
+  void addCurrentLocationToDB(String? fileUrl) async {
     LocationData pos = await getCurrentLocation();
     GeoFirePoint geoFirePoint = geo.point(
         latitude: double.parse("${pos.latitude}"),
@@ -80,7 +82,11 @@ class MapProvider extends ChangeNotifier {
 
     if (res.data() == null) {
       //create a new crime report
-      var data = {"report_number": 1, 'position': geoFirePoint.data};
+      var data = {
+        "report_number": 1,
+        'position': geoFirePoint.data,
+        "imagePath": fileUrl
+      };
       await db.addNewLocation(geoFirePoint.hash, data);
     } else {
       //update report number if document already exist

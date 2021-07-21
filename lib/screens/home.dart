@@ -1,3 +1,4 @@
+import 'package:crime_alert/dialog.dart';
 import 'package:crime_alert/provider/MapProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,7 +13,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late MapProvider mapProvider;
-  TextEditingController _crimeLocation = TextEditingController();
 
   @override
   void dispose() {
@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
             onMapCreated: mapProvider.onMapCreated,
             initialCameraPosition: const CameraPosition(
               target: LatLng(9.432919, -0.848452),
-              zoom: 11.0,
+              zoom: 13.0,
             ),
             markers: mapProvider.markers.toSet(),
             zoomControlsEnabled: false,
@@ -43,46 +43,16 @@ class _HomeState extends State<Home> {
                 backgroundColor: MaterialStateProperty.all(Colors.green[600]),
               ),
               onPressed: () {
-                _reportCrime();
+                showDialog(
+                  context: context,
+                  builder: (_) => ReportDialog(),
+                );
               },
               child: Icon(Icons.add),
             ),
           )
         ],
       ),
-    );
-  }
-
-  Future<void> _reportCrime() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('New Crime'),
-          content: Container(
-            height: 50,
-            child: Center(
-              child: TextField(
-                controller: _crimeLocation,
-              ),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Upload Image'),
-              onPressed: () {},
-            ),
-            TextButton(
-              child: Text('Use Current Location'),
-              onPressed: () async {
-                mapProvider.addCurrentLocationToDB();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

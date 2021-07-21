@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Database {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -21,5 +24,15 @@ class Database {
   Future<DocumentSnapshot<Map<String, dynamic>>> verifyHashInDB(
       String docHash) async {
     return await firestore.collection("locations").doc(docHash).get();
+  }
+
+  static UploadTask? uploadFile(File file, String fileName) {
+    try {
+      final ref = FirebaseStorage.instance.ref("CrimeImages/$fileName");
+      return ref.putFile(file);
+    } on FirebaseException catch (e) {
+      print("error uploading $e");
+      return null;
+    }
   }
 }

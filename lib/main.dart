@@ -1,3 +1,4 @@
+import 'package:crime_alert/provider/CrimeImageProvider.dart';
 import 'package:crime_alert/provider/MapProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,10 @@ void main() async {
   await FlutterConfig.loadEnvVariables();
   await Firebase.initializeApp();
   runApp(MultiProvider(
-    providers: [ChangeNotifierProvider.value(value: MapProvider())],
+    providers: [
+      ChangeNotifierProvider.value(value: MapProvider()),
+      ChangeNotifierProvider.value(value: CrimeImageProvider()),
+    ],
     child: CrimeAlert(),
   ));
 }
