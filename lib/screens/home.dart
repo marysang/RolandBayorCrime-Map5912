@@ -1,10 +1,7 @@
-import 'dart:async';
+import 'package:crime_alert/provider/MapProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,41 +11,28 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Completer<GoogleMapController> _mapController = Completer();
+  late MapProvider mapProvider;
   TextEditingController _crimeLocation = TextEditingController();
-  final _firestore = FirebaseFirestore.instance;
-  late Geoflutterfire geo;
-  late Stream<List<DocumentSnapshot>> stream;
-  var radius = BehaviorSubject.seeded(200.0);
-  Location location = Location();
-
-  //Map markers
-  List<Marker> markers = [];
-
-  @override
-  void initState() {
-    openStream();
-    super.initState();
-  }
 
   @override
   void dispose() {
     super.dispose();
-    radius.close();
+    mapProvider.radius.close();
   }
 
   @override
   Widget build(BuildContext context) {
+    mapProvider = Provider.of<MapProvider>(context);
     return Scaffold(
       body: Stack(
         children: [
           GoogleMap(
-            onMapCreated: _onMapCreated,
+            onMapCreated: mapProvider.onMapCreated,
             initialCameraPosition: const CameraPosition(
               target: LatLng(9.432919, -0.848452),
-              zoom: 12.0,
+              zoom: 11.0,
             ),
-            markers: markers.toSet(),
+            markers: mapProvider.markers.toSet(),
             zoomControlsEnabled: false,
           ),
           Positioned(
@@ -59,7 +43,6 @@ class _HomeState extends State<Home> {
                 backgroundColor: MaterialStateProperty.all(Colors.green[600]),
               ),
               onPressed: () {
-                // _addMarker(lat, lng)();
                 _reportCrime();
               },
               child: Icon(Icons.add),
@@ -68,10 +51,6 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
-  }
-
-  Future<LocationData> getCurrentLocation() async {
-    return location.getLocation();
   }
 
   Future<void> _reportCrime() async {
@@ -97,9 +76,7 @@ class _HomeState extends State<Home> {
             TextButton(
               child: Text('Use Current Location'),
               onPressed: () async {
-                var pos = await getCurrentLocation();
-                _addLocationToDB(double.parse("${pos.latitude}"),
-                    double.parse("${pos.longitude}"));
+                mapProvider.addCurrentLocationToDB();
                 Navigator.of(context).pop();
               },
             ),
@@ -107,86 +84,5 @@ class _HomeState extends State<Home> {
         );
       },
     );
-  }
-
-  void openStream() {
-    geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(latitude: 9.432919, longitude: -0.848452);
-    stream = radius.switchMap((rad) {
-      var collectionReference = _firestore.collection('locations');
-      return geo
-          .collection(collectionRef: collectionReference)
-          .within(center: center, radius: rad, field: 'position');
-    });
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController.complete(controller);
-    stream.listen((List<DocumentSnapshot> documentList) {
-      _updateMarkers(documentList);
-    });
-  }
-
-  void _showHome() async {
-    final GoogleMapController controller = await _mapController.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(
-      const CameraPosition(
-        target: LatLng(12.960632, 77.641603),
-        zoom: 15.0,
-      ),
-    ));
-  }
-
-  void _addLocationToDB(double lat, double lng) async {
-    GeoFirePoint geoFirePoint = geo.point(latitude: lat, longitude: lng);
-    var res =
-        await _firestore.collection("locations").doc(geoFirePoint.hash).get();
-    if (res.data() == null) {
-      _firestore
-          .collection('locations')
-          .doc(geoFirePoint.hash)
-          .set({"report_number": 1, 'position': geoFirePoint.data}).then((_) {
-        print('added ${geoFirePoint.hash} successfully');
-      });
-    } else {
-      _firestore.collection('locations').doc(geoFirePoint.hash).set({
-        "report_number": res.data()!["report_number"] + 1,
-        'position': geoFirePoint.data
-      }).then((_) {
-        print('added ${geoFirePoint.hash} successfully');
-      });
-    }
-    setState(() {});
-  }
-
-  void _addMarker(double lat, double lng, int count) {
-    var _marker;
-    late BitmapDescriptor icon;
-
-    if (count < 5) {
-      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-    } else if (count >= 5 && count < 20) {
-      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
-    } else if (count >= 20) {
-      icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
-    }
-
-    _marker = Marker(
-      markerId: MarkerId(UniqueKey().toString()),
-      position: LatLng(lat, lng),
-      icon: icon,
-    );
-    setState(() {
-      markers.add(_marker);
-      print("ADDED");
-    });
-  }
-
-  void _updateMarkers(List<DocumentSnapshot> snapshot) {
-    snapshot.forEach((DocumentSnapshot doc) {
-      GeoPoint point = doc['position']['geopoint'];
-      int count = doc["report_number"];
-      _addMarker(point.latitude, point.longitude, count);
-    });
   }
 }
