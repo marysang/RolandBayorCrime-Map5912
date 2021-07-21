@@ -20,7 +20,7 @@ class _HomeState extends State<Home> {
     mapProvider.radius.close();
   }
 
-  Widget crimeImage() {
+  Widget _crimeImage() {
     return mapProvider.imgPath == ""
         ? Container()
         : AnimatedPositioned(
@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Container(
-                height: 100,
+                height: 200,
                 child: Image.network(mapProvider.imgPath),
               ),
             ),
@@ -56,11 +56,11 @@ class _HomeState extends State<Home> {
             zoomControlsEnabled: false,
             onTap: (LatLng latLng) {
               setState(() {
-                mapProvider.infoPosition = -200;
+                mapProvider.infoPosition = -300;
               });
             },
           ),
-          crimeImage(),
+          _crimeImage(),
           Positioned(
             bottom: 50,
             right: 20,

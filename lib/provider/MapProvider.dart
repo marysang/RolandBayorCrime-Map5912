@@ -16,7 +16,7 @@ class MapProvider extends ChangeNotifier {
   Location location = Location();
   final db = Database();
   String imgPath = "";
-  double infoPosition = -200;
+  double infoPosition = -300;
 
   //Map markers
   List<Marker> markers = [];

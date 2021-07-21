@@ -15,6 +15,14 @@ class _ReportDialogState extends State<ReportDialog> {
   TextEditingController _crimeLocation = TextEditingController();
   late CrimeImageProvider crimeImageProvider;
 
+  _wrongFileType() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("Please select an image file"),
+      duration: Duration(seconds: 2),
+    ));
+    crimeImageProvider.wrongType = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     mapProvider = Provider.of<MapProvider>(context);
@@ -51,6 +59,9 @@ class _ReportDialogState extends State<ReportDialog> {
           child: Text('Select Image'),
           onPressed: () async {
             await crimeImageProvider.selectFile();
+            if (crimeImageProvider.wrongType) {
+              _wrongFileType();
+            }
           },
         ),
         TextButton(

@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
+import 'package:mime/mime.dart';
 
 class CrimeImageProvider extends ChangeNotifier {
   File? file;
@@ -12,13 +13,24 @@ class CrimeImageProvider extends ChangeNotifier {
   UploadTask? task;
   String? _fileUrl;
   MapProvider mapProvider = MapProvider();
+  bool wrongType = false;
 
   Future selectFile() async {
     final res = await FilePicker.platform.pickFiles(allowMultiple: false);
-    if (res == null) return "";
+    if (res == null) return;
 
     file = File(res.files.single.path.toString());
     fileName = basename(file!.path);
+
+    String? mimeStr = lookupMimeType(res.files.single.path.toString());
+    var fileType = mimeStr!.split('/');
+
+    if (fileType[0].toLowerCase().toString() != "image") {
+      wrongType = true;
+      _clearData();
+      notifyListeners();
+      return;
+    }
     notifyListeners();
   }
 
