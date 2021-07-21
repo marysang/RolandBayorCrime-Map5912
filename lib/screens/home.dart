@@ -20,9 +20,28 @@ class _HomeState extends State<Home> {
     mapProvider.radius.close();
   }
 
+  Widget crimeImage() {
+    return mapProvider.imgPath == ""
+        ? Container()
+        : AnimatedPositioned(
+            top: mapProvider.infoPosition,
+            right: 0,
+            left: 0,
+            duration: Duration(milliseconds: 200),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Container(
+                height: 100,
+                child: Image.network(mapProvider.imgPath),
+              ),
+            ),
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     mapProvider = Provider.of<MapProvider>(context);
+    print(mapProvider.infoPosition);
     return Scaffold(
       body: Stack(
         children: [
@@ -33,8 +52,15 @@ class _HomeState extends State<Home> {
               zoom: 13.0,
             ),
             markers: mapProvider.markers.toSet(),
+            tiltGesturesEnabled: false,
             zoomControlsEnabled: false,
+            onTap: (LatLng latLng) {
+              setState(() {
+                mapProvider.infoPosition = -200;
+              });
+            },
           ),
+          crimeImage(),
           Positioned(
             bottom: 50,
             right: 20,
