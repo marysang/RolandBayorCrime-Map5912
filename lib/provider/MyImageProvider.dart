@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:crime_alert/class/database.dart';
+import 'package:crime_alert/class/FirestoreFunctions.dart';
 import 'package:crime_alert/provider/MapProvider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:mime/mime.dart';
 
-class CrimeImageProvider extends ChangeNotifier {
+class MyImageProvider extends ChangeNotifier {
   File? file;
   String fileName = "No Image";
   UploadTask? task;

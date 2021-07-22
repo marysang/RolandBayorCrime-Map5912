@@ -1,4 +1,4 @@
-import 'package:crime_alert/provider/CrimeImageProvider.dart';
+import 'package:crime_alert/provider/MyImageProvider.dart';
 import 'package:crime_alert/provider/MapProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +11,8 @@ class ReportDialog extends StatefulWidget {
 }
 
 class _ReportDialogState extends State<ReportDialog> {
-  late MapProvider mapProvider;
   TextEditingController _crimeLocation = TextEditingController();
-  late CrimeImageProvider crimeImageProvider;
+  late MyImageProvider _crimeImageProvider;
 
   _sendSnackMessage(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -21,65 +20,123 @@ class _ReportDialogState extends State<ReportDialog> {
       duration: Duration(seconds: 3),
       backgroundColor: color,
     ));
-    crimeImageProvider.wrongType = false;
+    _crimeImageProvider.wrongType = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    mapProvider = Provider.of<MapProvider>(context);
-    crimeImageProvider = Provider.of<CrimeImageProvider>(context);
-    return AlertDialog(
-      title: Text('Report Crime'),
-      content: Container(
-        height: 100,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _crimeLocation,
-              decoration: InputDecoration(
-                hintText: "Leave Empty to use Current Location",
-                hintStyle: TextStyle(fontSize: 15),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Text(
-                crimeImageProvider.fileName,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+    _crimeImageProvider = Provider.of<MyImageProvider>(context);
+
+    return Consumer2<MapProvider, MyImageProvider>(
+        builder: (context, mapProvider, imageProvider, child) {
+      return AlertDialog(
+        title: Text('Report Crime'),
+        content: Container(
+          height: 100,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              TextField(
+                controller: _crimeLocation,
+                decoration: InputDecoration(
+                  hintText: "Leave Empty to use Current Location",
+                  hintStyle: TextStyle(fontSize: 15),
                 ),
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Text(
+                  imageProvider.fileName,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: Text('Select Image'),
-          onPressed: () async {
-            await crimeImageProvider.selectFile();
-            if (crimeImageProvider.wrongType) {
-              _sendSnackMessage(
-                "File type not allowed. Please select an image file.",
-                Colors.red,
-              );
-            }
-          },
-        ),
-        TextButton(
-          child: Text('Save'),
-          onPressed: () async {
-            _sendSnackMessage("Sending Report Please Wait.", Colors.orange);
-            crimeImageProvider.file == null
-                ? mapProvider.addCurrentLocationToDB("")
-                : await crimeImageProvider.uploadImage();
-            _sendSnackMessage("Report Succefully sent!", Colors.green);
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
+        actions: <Widget>[
+          TextButton(
+            child: Text('Select Image'),
+            onPressed: () async {
+              await imageProvider.selectFile();
+              if (imageProvider.wrongType) {
+                _sendSnackMessage(
+                  "File type not allowed. Please select an image file.",
+                  Colors.red,
+                );
+              }
+            },
+          ),
+          TextButton(
+            child: Text('Save'),
+            onPressed: () async {
+              _sendSnackMessage("Sending Report Please Wait.", Colors.orange);
+              imageProvider.file == null
+                  ? mapProvider.addCurrentLocationToDB("")
+                  : await imageProvider.uploadImage();
+              _sendSnackMessage("Report Succefully sent!", Colors.green);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    });
   }
 }
+
+
+//  AlertDialog(
+//       title: Text('Report Crime'),
+//       content: Container(
+//         height: 100,
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.start,
+//           children: [
+//             TextField(
+//               controller: _crimeLocation,
+//               decoration: InputDecoration(
+//                 hintText: "Leave Empty to use Current Location",
+//                 hintStyle: TextStyle(fontSize: 15),
+//               ),
+//             ),
+//             Padding(
+//               padding: const EdgeInsets.only(top: 10.0),
+//               child: Text(
+//                 _crimeImageProvider.fileName,
+//                 style: TextStyle(
+//                   fontSize: 12,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//             )
+//           ],
+//         ),
+//       ),
+//       actions: <Widget>[
+//         TextButton(
+//           child: Text('Select Image'),
+//           onPressed: () async {
+//             await _crimeImageProvider.selectFile();
+//             if (_crimeImageProvider.wrongType) {
+//               _sendSnackMessage(
+//                 "File type not allowed. Please select an image file.",
+//                 Colors.red,
+//               );
+//             }
+//           },
+//         ),
+//         TextButton(
+//           child: Text('Save'),
+//           onPressed: () async {
+//             _sendSnackMessage("Sending Report Please Wait.", Colors.orange);
+//             _crimeImageProvider.file == null
+//                 ? mapProvider.addCurrentLocationToDB("")
+//                 : await _crimeImageProvider.uploadImage();
+//             _sendSnackMessage("Report Succefully sent!", Colors.green);
+//             Navigator.of(context).pop();
+//           },
+//         ),
+//       ],
+//     );

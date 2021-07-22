@@ -12,19 +12,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late MapProvider mapProvider;
+  late MapProvider maps;
 
   @override
   void dispose() {
     super.dispose();
-    mapProvider.radius.close();
+    // mapProvider.radius.close();
   }
 
   Widget _crimeImage() {
-    return mapProvider.imgPath == ""
+    return maps.imgPath == ""
         ? Container()
         : AnimatedPositioned(
-            top: mapProvider.infoPosition,
+            top: maps.infoPosition,
             right: 0,
             left: 0,
             duration: Duration(milliseconds: 200),
@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.all(10),
               child: Container(
                 height: 200,
-                child: Image.network(mapProvider.imgPath),
+                child: Image.network(maps.imgPath),
               ),
             ),
           );
@@ -40,44 +40,49 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    mapProvider = Provider.of<MapProvider>(context);
+    maps = Provider.of<MapProvider>(context);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          GoogleMap(
-            onMapCreated: mapProvider.onMapCreated,
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(9.432919, -0.848452),
-              zoom: 13.0,
-            ),
-            markers: mapProvider.markers.toSet(),
-            tiltGesturesEnabled: false,
-            zoomControlsEnabled: false,
-            onTap: (LatLng latLng) {
-              setState(() {
-                mapProvider.infoPosition = -300;
-              });
-            },
-          ),
-          _crimeImage(),
-          Positioned(
-            bottom: 50,
-            right: 20,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.green[600]),
+      body: Consumer<MapProvider>(
+        builder: (context, mapProvider, child) {
+          return Stack(
+            children: [
+              GoogleMap(
+                onMapCreated: mapProvider.onMapCreated,
+                initialCameraPosition: const CameraPosition(
+                  target: LatLng(9.432919, -0.848452),
+                  zoom: 13.0,
+                ),
+                markers: mapProvider.markers.toSet(),
+                tiltGesturesEnabled: false,
+                zoomControlsEnabled: false,
+                onTap: (LatLng latLng) {
+                  setState(() {
+                    mapProvider.infoPosition = -300;
+                  });
+                },
               ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => ReportDialog(),
-                );
-              },
-              child: Icon(Icons.add),
-            ),
-          )
-        ],
+              _crimeImage(),
+              Positioned(
+                bottom: 50,
+                right: 20,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.green[600]),
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => ReportDialog(),
+                    );
+                  },
+                  child: Icon(Icons.add),
+                ),
+              )
+            ],
+          );
+        },
       ),
     );
   }

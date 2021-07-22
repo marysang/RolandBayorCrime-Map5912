@@ -1,4 +1,4 @@
-import 'package:crime_alert/provider/CrimeImageProvider.dart';
+import 'package:crime_alert/provider/MyImageProvider.dart';
 import 'package:crime_alert/provider/MapProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +12,8 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider.value(value: MapProvider()),
-      ChangeNotifierProvider.value(value: CrimeImageProvider()),
+      ChangeNotifierProvider(create: (_) => MapProvider()),
+      ChangeNotifierProvider(create: (_) => MyImageProvider()),
     ],
     child: CrimeAlert(),
   ));
@@ -25,7 +25,7 @@ class CrimeAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Crime Alert App",
+      title: "Crime Alert",
       onGenerateRoute: router.generateRoute,
       initialRoute: "login",
       debugShowCheckedModeBanner: false,
