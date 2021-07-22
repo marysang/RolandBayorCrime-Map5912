@@ -1,4 +1,4 @@
-import 'package:crime_alert/dialog.dart';
+import 'package:crime_alert/reportDialog.dart';
 import 'package:crime_alert/provider/MapProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,31 +17,12 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     super.dispose();
-    // mapProvider.radius.close();
-  }
-
-  Widget _crimeImage() {
-    return maps.imgPath == ""
-        ? Container()
-        : AnimatedPositioned(
-            top: maps.infoPosition,
-            right: 0,
-            left: 0,
-            duration: Duration(milliseconds: 200),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Container(
-                height: 200,
-                child: Image.network(maps.imgPath),
-              ),
-            ),
-          );
+    // maps.radius.close();
   }
 
   @override
   Widget build(BuildContext context) {
     maps = Provider.of<MapProvider>(context);
-
     return Scaffold(
       body: Consumer<MapProvider>(
         builder: (context, mapProvider, child) {
@@ -85,5 +66,24 @@ class _HomeState extends State<Home> {
         },
       ),
     );
+  }
+
+  Widget _crimeImage() {
+    //display uploaded image
+    return maps.imgPath == ""
+        ? Container()
+        : AnimatedPositioned(
+            top: maps.infoPosition,
+            right: 0,
+            left: 0,
+            duration: Duration(milliseconds: 200),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Container(
+                height: 200,
+                child: Image.network(maps.imgPath),
+              ),
+            ),
+          );
   }
 }

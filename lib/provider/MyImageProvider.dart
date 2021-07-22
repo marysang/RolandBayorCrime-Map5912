@@ -15,7 +15,9 @@ class MyImageProvider extends ChangeNotifier {
   MapProvider mapProvider = MapProvider();
   bool wrongType = false;
 
-  Future selectFile() async {
+  Future<void> selectFile() async {
+    //select file and check to make sure its an image file
+
     final res = await FilePicker.platform.pickFiles(allowMultiple: false);
     if (res == null) return;
 
@@ -34,18 +36,22 @@ class MyImageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  uploadImage() async {
+  Future<void> uploadImage() async {
+    //upload file to firebase storage and retrieve the url
+
     if (file == null) return;
-    task = Database.uploadFile(file!, fileName);
+    task = FirestoreFunctions.uploadFile(file!, fileName);
     if (task == null) return;
     final snap = await task!;
     _fileUrl = await snap.ref.getDownloadURL();
-    mapProvider.addCurrentLocationToDB(_fileUrl);
+    mapProvider.addReportToDB(_fileUrl);
     _clearData();
+
     notifyListeners();
   }
 
   _clearData() {
+    //set variables back to default
     file = null;
     fileName = "No Image";
   }

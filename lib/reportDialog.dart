@@ -74,9 +74,13 @@ class _ReportDialogState extends State<ReportDialog> {
             onPressed: () async {
               _sendSnackMessage("Sending Report Please Wait.", Colors.orange);
               imageProvider.file == null
-                  ? mapProvider.addCurrentLocationToDB("")
+                  ? await mapProvider.addReportToDB("")
                   : await imageProvider.uploadImage();
-              _sendSnackMessage("Report Succefully sent!", Colors.green);
+              if (mapProvider.isUploadSuccess) {
+                _sendSnackMessage("Report Succefully sent!", Colors.green);
+              } else {
+                _sendSnackMessage("Error Sending Report!", Colors.red);
+              }
               Navigator.of(context).pop();
             },
           ),
@@ -85,58 +89,3 @@ class _ReportDialogState extends State<ReportDialog> {
     });
   }
 }
-
-
-//  AlertDialog(
-//       title: Text('Report Crime'),
-//       content: Container(
-//         height: 100,
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.start,
-//           children: [
-//             TextField(
-//               controller: _crimeLocation,
-//               decoration: InputDecoration(
-//                 hintText: "Leave Empty to use Current Location",
-//                 hintStyle: TextStyle(fontSize: 15),
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.only(top: 10.0),
-//               child: Text(
-//                 _crimeImageProvider.fileName,
-//                 style: TextStyle(
-//                   fontSize: 12,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             )
-//           ],
-//         ),
-//       ),
-//       actions: <Widget>[
-//         TextButton(
-//           child: Text('Select Image'),
-//           onPressed: () async {
-//             await _crimeImageProvider.selectFile();
-//             if (_crimeImageProvider.wrongType) {
-//               _sendSnackMessage(
-//                 "File type not allowed. Please select an image file.",
-//                 Colors.red,
-//               );
-//             }
-//           },
-//         ),
-//         TextButton(
-//           child: Text('Save'),
-//           onPressed: () async {
-//             _sendSnackMessage("Sending Report Please Wait.", Colors.orange);
-//             _crimeImageProvider.file == null
-//                 ? mapProvider.addCurrentLocationToDB("")
-//                 : await _crimeImageProvider.uploadImage();
-//             _sendSnackMessage("Report Succefully sent!", Colors.green);
-//             Navigator.of(context).pop();
-//           },
-//         ),
-//       ],
-//     );

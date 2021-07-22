@@ -6,17 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:rxdart/rxdart.dart';
 
 class MapProvider extends ChangeNotifier {
   Completer<GoogleMapController> _mapController = Completer();
   late Geoflutterfire geo;
-  late Stream<List<DocumentSnapshot>> stream;
-  var radius = BehaviorSubject.seeded(200.0);
+  late Stream<List<QueryDocumentSnapshot<Object?>>> stream;
   Location location = Location();
-  final db = Database();
+  final db = FirestoreFunctions();
   String imgPath = "";
   double infoPosition = -300;
+  bool isUploadSuccess = false;
+  final fireFunctions = FirestoreFunctions();
 
   //Map markers
   List<Marker> markers = [];
@@ -26,8 +26,9 @@ class MapProvider extends ChangeNotifier {
 
   void onMapCreated(GoogleMapController controller) {
     _mapController.complete(controller);
-    stream.listen((List<DocumentSnapshot> documentList) {
+    stream.listen((List<QueryDocumentSnapshot<Object?>> documentList) {
       _updateMarkers(documentList);
+      notifyListeners();
     });
     notifyListeners();
   }
@@ -35,13 +36,9 @@ class MapProvider extends ChangeNotifier {
   void openStream() {
     geo = Geoflutterfire();
     GeoFirePoint center = geo.point(latitude: 9.3745, longitude: -0.8794);
-    stream = radius.switchMap((rad) {
-      var collectionReference = db.locationRef();
+    fireFunctions.getStream();
 
-      return geo
-          .collection(collectionRef: collectionReference)
-          .within(center: center, radius: rad, field: 'position');
-    });
+    stream = fireFunctions.getStream();
   }
 
   void _updateMarkers(List<DocumentSnapshot> snapshot) {
@@ -51,6 +48,7 @@ class MapProvider extends ChangeNotifier {
       int count = doc["report_number"];
       String img = doc["imagePath"];
       imgPath = doc["imagePath"];
+
       _addMarker(point.latitude, point.longitude, count, img);
     });
   }
@@ -59,6 +57,7 @@ class MapProvider extends ChangeNotifier {
     var _marker;
     late BitmapDescriptor icon;
 
+    //switch marker colours based on number of reports
     if (count < 5) {
       icon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
     } else if (count >= 5 && count < 20) {
@@ -81,7 +80,7 @@ class MapProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addCurrentLocationToDB(String? fileUrl) async {
+  Future<void> addReportToDB(String? fileUrl) async {
     LocationData pos = await getCurrentLocation();
     GeoFirePoint geoFirePoint = geo.point(
         latitude: double.parse("${pos.latitude}"),
@@ -96,14 +95,23 @@ class MapProvider extends ChangeNotifier {
         'position': geoFirePoint.data,
         "imagePath": fileUrl
       };
-      await db.addNewLocation(geoFirePoint.hash, data);
+      await db
+          .addNewReport(geoFirePoint.hash, data)
+          .then((value) => isUploadSuccess = true);
+
+      notifyListeners();
     } else {
       //update report number if document already exist
-      await db.updateReportNumber(
-        geoFirePoint.hash,
-        res.data()!["report_number"],
-      );
+      await db
+          .updateReportNumber(
+            geoFirePoint.hash,
+            res.data()!["report_number"],
+          )
+          .then((value) => isUploadSuccess = true);
+
+      notifyListeners();
     }
+
     notifyListeners();
   }
 

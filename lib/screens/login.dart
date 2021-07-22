@@ -12,12 +12,12 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool _isLoggingIn = false;
-  final _db = Database();
+  final _db = FirestoreFunctions();
 
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      Future.delayed(Duration(milliseconds: 50), () {
+      Future.delayed(Duration(milliseconds: 100), () {
         if (FirebaseAuth.instance.currentUser != null) {
           Navigator.pushReplacementNamed(context, "home");
         }
@@ -75,6 +75,8 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _onSignin() async {
+    //sign in user with google auth
+
     _isLoggingIn = true;
     final GoogleSignInAccount? googleSignInAccount =
         await GoogleSignIn().signIn();
@@ -88,19 +90,20 @@ class _LoginState extends State<Login> {
     final res = await FirebaseAuth.instance.signInWithCredential(credential);
 
     if (res.user != null) {
+      //if sign in is successful store user name and email in db
       _db.createUser(res.user!.displayName.toString(),
           res.user!.email.toString(), res.user!.uid.toString());
-      _isLoggingIn = false;
       _successfulSignIn(res.user!.displayName.toString());
       Navigator.popAndPushNamed(context, "home");
     }
   }
 
-  _successfulSignIn(String name) {
+  void _successfulSignIn(String name) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text("Welcome $name"),
       duration: Duration(seconds: 2),
       backgroundColor: Colors.orange[900],
     ));
+    _isLoggingIn = false;
   }
 }

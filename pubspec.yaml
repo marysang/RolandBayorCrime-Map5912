@@ -25,7 +25,6 @@ dependencies:
     sdk: flutter
 
   provider: ^5.0.0
-  rxdart: ^0.27.1
   mime: ^1.0.0
   firebase_core: ^1.4.0
   firebase_auth: ^3.0.1
