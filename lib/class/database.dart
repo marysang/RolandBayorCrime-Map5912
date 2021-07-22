@@ -26,6 +26,13 @@ class Database {
     return await firestore.collection("locations").doc(docHash).get();
   }
 
+  Future<void> createUser(String name, String email, String userHash) async {
+    await firestore
+        .collection("users")
+        .doc(userHash)
+        .set({"name": name, "email": email});
+  }
+
   static UploadTask? uploadFile(File file, String fileName) {
     try {
       final ref = FirebaseStorage.instance.ref("CrimeImages/$fileName");

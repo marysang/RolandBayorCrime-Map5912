@@ -41,7 +41,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     mapProvider = Provider.of<MapProvider>(context);
-    print(mapProvider.infoPosition);
+
     return Scaffold(
       body: Stack(
         children: [

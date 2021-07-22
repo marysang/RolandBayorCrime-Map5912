@@ -15,10 +15,11 @@ class _ReportDialogState extends State<ReportDialog> {
   TextEditingController _crimeLocation = TextEditingController();
   late CrimeImageProvider crimeImageProvider;
 
-  _wrongFileType() {
+  _sendSnackMessage(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("Please select an image file"),
-      duration: Duration(seconds: 2),
+      content: Text(message),
+      duration: Duration(seconds: 3),
+      backgroundColor: color,
     ));
     crimeImageProvider.wrongType = false;
   }
@@ -60,16 +61,21 @@ class _ReportDialogState extends State<ReportDialog> {
           onPressed: () async {
             await crimeImageProvider.selectFile();
             if (crimeImageProvider.wrongType) {
-              _wrongFileType();
+              _sendSnackMessage(
+                "File type not allowed. Please select an image file.",
+                Colors.red,
+              );
             }
           },
         ),
         TextButton(
           child: Text('Save'),
           onPressed: () async {
+            _sendSnackMessage("Sending Report Please Wait.", Colors.orange);
             crimeImageProvider.file == null
                 ? mapProvider.addCurrentLocationToDB("")
-                : crimeImageProvider.uploadImage();
+                : await crimeImageProvider.uploadImage();
+            _sendSnackMessage("Report Succefully sent!", Colors.green);
             Navigator.of(context).pop();
           },
         ),
