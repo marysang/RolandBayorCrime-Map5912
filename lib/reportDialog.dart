@@ -17,7 +17,7 @@ class _ReportDialogState extends State<ReportDialog> {
   _sendSnackMessage(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
       backgroundColor: color,
     ));
     _crimeImageProvider.wrongType = false;
@@ -26,7 +26,6 @@ class _ReportDialogState extends State<ReportDialog> {
   @override
   Widget build(BuildContext context) {
     _crimeImageProvider = Provider.of<MyImageProvider>(context);
-
     return Consumer2<MapProvider, MyImageProvider>(
         builder: (context, mapProvider, imageProvider, child) {
       return AlertDialog(

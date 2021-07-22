@@ -31,8 +31,8 @@ class _HomeState extends State<Home> {
               GoogleMap(
                 onMapCreated: mapProvider.onMapCreated,
                 initialCameraPosition: const CameraPosition(
-                  target: LatLng(9.432919, -0.848452),
-                  zoom: 13.0,
+                  target: LatLng(9.432, -0.848),
+                  zoom: 12.0,
                 ),
                 markers: mapProvider.markers.toSet(),
                 tiltGesturesEnabled: false,
