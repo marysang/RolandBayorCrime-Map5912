@@ -69,17 +69,17 @@ class _ReportDialogState extends State<ReportDialog> {
             },
           ),
           TextButton(
-            child: Text('Save'),
+            child: Text('Report'),
             onPressed: () async {
               _sendSnackMessage("Sending Report Please Wait.", Colors.orange);
               imageProvider.file == null
                   ? await mapProvider.addReportToDB("")
                   : await imageProvider.uploadImage();
+
               if (mapProvider.isUploadSuccess) {
                 _sendSnackMessage("Report Succefully sent!", Colors.green);
-              } else {
-                _sendSnackMessage("Error Sending Report!", Colors.red);
               }
+
               Navigator.of(context).pop();
             },
           ),
